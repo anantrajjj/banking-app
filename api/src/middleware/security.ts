@@ -19,10 +19,15 @@ export const securityMiddleware: RequestHandler = helmet({
     useDefaults: false,
     directives: {
       defaultSrc: ["'self'"],
+      // script-src stays strict — no inline scripts allowed.
       scriptSrc: ["'self'"],
-      styleSrc: ["'self'"],
-      imgSrc: ["'self'"],
-      fontSrc: ["'self'"],
+      // The SPA uses React inline styles and Google Fonts, so allow inline
+      // styles and the Google Fonts stylesheet origin.
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      // Google Fonts / Material Symbols glyph files.
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      // 'data:' covers inline SVG background-images used in the CSS.
+      imgSrc: ["'self'", 'data:'],
       objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
       baseUri: ["'self'"],

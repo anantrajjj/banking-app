@@ -68,7 +68,9 @@ describe('securityMiddleware — HTTP security headers (Requirement 12.1)', () =
     it("includes script-src 'self' without 'unsafe-inline'", () => {
       const csp = headers['content-security-policy'] as string;
       expect(csp).toMatch(/script-src\s+['"]self['"]/);
-      expect(csp).not.toContain("'unsafe-inline'");
+      // The script-src directive specifically must not permit inline scripts.
+      const scriptSrc = csp.split(';').find((d) => d.trim().startsWith('script-src')) ?? '';
+      expect(scriptSrc).not.toContain("'unsafe-inline'");
     });
 
     it("includes object-src 'none'", () => {
