@@ -1,0 +1,53 @@
+{
+  "name": "@securebank/api",
+  "version": "1.0.0",
+  "description": "SecureBank Node.js/Express REST API",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/app.js",
+    "dev": "ts-node src/app.ts",
+    "migrate": "node dist/db/migrate.js",
+    "seed": "node dist/db/seed.js",
+    "test": "jest --runInBand --forceExit",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch": "3.758.0",
+    "@aws-sdk/client-secrets-manager": "3.758.0",
+    "@aws-sdk/client-sns": "3.758.0",
+    "ajv": "8.17.1",
+    "bcrypt": "5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "4.21.2",
+    "express-rate-limit": "7.5.0",
+    "helmet": "8.0.0",
+    "ioredis": "5.6.0",
+    "jsonwebtoken": "9.0.2",
+    "pg": "8.13.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "5.0.2",
+    "@types/express": "5.0.1",
+    "@types/jest": "29.5.14",
+    "@types/jsonwebtoken": "9.0.9",
+    "@types/node": "22.14.0",
+    "@types/pg": "8.11.11",
+    "@typescript-eslint/eslint-plugin": "8.28.0",
+    "@typescript-eslint/parser": "8.28.0",
+    "eslint": "9.23.0",
+    "eslint-config-prettier": "10.1.1",
+    "fast-check": "3.23.2",
+    "jest": "29.7.0",
+    "prettier": "3.5.3",
+    "ts-jest": "29.3.1",
+    "ts-node": "10.9.2",
+    "typescript": "5.8.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

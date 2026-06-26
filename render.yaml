@@ -1,0 +1,65 @@
+# Render Blueprint for SecureBank
+# Docs: https://render.com/docs/blueprint-spec
+#
+# This provisions:
+#   - a managed PostgreSQL database
+#   - a managed Key Value (Redis) instance
+#   - a single Node web service that serves BOTH the API and the built frontend
+#
+# Secrets marked "sync: false" must be filled in the Render dashboard after the
+# blueprint is created (Render will prompt for them). Nothing sensitive is
+# stored in this file.
+
+databases:
+  - name: securebank-db
+    databaseName: securebank
+    user: securebank
+    plan: free
+
+services:
+  # ── Redis / Key Value (sessions, token revocation, rate limiting) ──────────
+  - type: redis
+    name: securebank-redis
+    plan: free
+    ipAllowList: [] # only reachable from other Render services
+    maxmemoryPolicy: noeviction
+
+  # ── Web service: API + frontend ────────────────────────────────────────────
+  - type: web
+    name: securebank
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install --include=dev && npm run build
+    # migrate + seed run on every start; both are idempotent.
+    startCommand: npm run migrate && npm run seed && npm start
+    healthCheckPath: /v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: USE_AWS_SECRETS
+        value: "false"
+      - key: CLOUDWATCH_ENABLED
+        value: "false"
+      - key: OTP_DELIVERY
+        value: console
+      - key: DATABASE_URL
+        fromDatabase:
+          name: securebank-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: securebank-redis
+          property: connectionString
+      # ── Fill these in the Render dashboard (sensitive) ──────────────────────
+      - key: JWT_PRIVATE_KEY
+        sync: false
+      - key: JWT_PUBLIC_KEY
+        sync: false
+      - key: AES_256_KEY
+        sync: false
+      - key: SEED_USERNAME
+        sync: false
+      - key: SEED_PASSWORD
+        sync: false
