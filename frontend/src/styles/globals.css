@@ -1,43 +1,43 @@
 /* ─── Design Tokens — Liquid Sand ───────────────────────────────────────────── */
 :root {
-  /* Palette */
-  --sand-base:       #F5F5F0;
-  --sand-card:       #EBEBE0;
-  --sand-border:     #D6D6CC;
-  --sand-deep:       #DCDCD0;
+  /* Palette — SBI cool blue-grey neutrals */
+  --sand-base:       #EEF2F9;
+  --sand-card:       #E1E8F4;
+  --sand-border:     #CBD6EA;
+  --sand-deep:       #D5DEEF;
 
-  /* Primary (Forest Green) */
-  --primary:         #18241b;
-  --primary-container: #2D3930;
+  /* Primary (SBI Blue) */
+  --primary:         #1A3E8C;
+  --primary-container: #22409A;
   --on-primary:      #ffffff;
-  --on-primary-container: #95a397;
+  --on-primary-container: #aeb9dc;
 
-  /* Secondary (Amber/Gold) */
-  --secondary:       #775a19;
-  --secondary-container: #fed488;
-  --on-secondary-container: #785a1a;
+  /* Secondary (SBI Sky Blue) */
+  --secondary:       #0A6EBD;
+  --secondary-container: #cfe2f7;
+  --on-secondary-container: #0a4a82;
 
   /* Surface */
-  --surface:         #fbfaef;
-  --surface-low:     #f6f4ea;
-  --surface-high:    #eae8de;
-  --surface-highest: #e4e3d9;
+  --surface:         #fbfcfe;
+  --surface-low:     #f4f7fc;
+  --surface-high:    #e8eef8;
+  --surface-highest: #dfe7f4;
 
   /* Text */
-  --on-surface:      #1b1c16;
-  --on-surface-var:  #434843;
-  --outline:         #747873;
-  --outline-var:     #c3c8c2;
+  --on-surface:      #161d2e;
+  --on-surface-var:  #404a61;
+  --outline:         #727b8e;
+  --outline-var:     #c2cbdb;
 
   /* Semantic */
   --color-success:   #2e7d32;
   --color-danger:    #ba1a1a;
-  --color-warning:   #7a5900;
+  --color-warning:   #b26a00;
 
   /* Glass (subtle, light mode) */
-  --glass-bg:        rgba(255,255,255,0.45);
-  --glass-border:    rgba(255,255,255,0.25);
-  --glass-shadow:    0 8px 30px rgba(107,107,99,0.10);
+  --glass-bg:        rgba(255,255,255,0.55);
+  --glass-border:    rgba(255,255,255,0.35);
+  --glass-shadow:    0 8px 30px rgba(34,64,154,0.10);
   --glass-blur:      blur(12px);
 
   /* Radius */
@@ -195,10 +195,10 @@ h3 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color
   letter-spacing: 0.06em; text-transform: uppercase;
   cursor: pointer;
   transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 4px 16px rgba(45,57,48,0.18);
+  box-shadow: 0 4px 16px rgba(34,64,154,0.22);
   width: 100%;
 }
-.btn-primary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,57,48,0.25); }
+.btn-primary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(34,64,154,0.30); }
 .btn-primary:active:not(:disabled) { transform: translateY(0); }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -249,7 +249,7 @@ h3 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color
 .alert-error   { background: rgba(186,26,26,0.08);  border: 1px solid rgba(186,26,26,0.2);  color: #93000a; }
 .alert-success { background: rgba(46,125,50,0.08);  border: 1px solid rgba(46,125,50,0.2);  color: #1b5e20; }
 .alert-warning { background: rgba(122,89,0,0.08);   border: 1px solid rgba(122,89,0,0.2);   color: #4a3500; }
-.alert-info    { background: rgba(45,57,48,0.08);   border: 1px solid rgba(45,57,48,0.2);   color: var(--primary); }
+.alert-info    { background: rgba(34,64,154,0.08);   border: 1px solid rgba(34,64,154,0.2);   color: var(--primary); }
 
 /* ─── Form field ─────────────────────────────────────────────────────────────── */
 .form-field { display: flex; flex-direction: column; gap: 4px; }
@@ -298,7 +298,7 @@ h3 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color
   color: var(--outline); border-bottom: 1px solid var(--sand-border);
 }
 .sb-table tbody tr { border-bottom: 1px solid var(--outline-var); transition: background var(--transition); }
-.sb-table tbody tr:hover { background: rgba(24,36,27,0.03); }
+.sb-table tbody tr:hover { background: rgba(34,64,154,0.04); }
 .sb-table tbody td { padding: 13px 16px; color: var(--on-surface); vertical-align: middle; }
 .sb-table tbody tr:last-child { border-bottom: none; }
 
@@ -323,7 +323,7 @@ h3 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color
   text-decoration: none;
 }
 .nav-item:hover { background: var(--surface-high); color: var(--primary); transform: translateX(2px); }
-.nav-item.active { background: rgba(254,212,136,0.15); color: var(--primary); font-weight: 600; }
+.nav-item.active { background: rgba(34,64,154,0.10); color: var(--primary); font-weight: 600; }
 .nav-item .nav-icon { font-size: 1.25rem; width: 22px; text-align: center; flex-shrink: 0; }
 
 .main-content { margin-left: 256px; min-height: 100vh; flex: 1; }
@@ -352,7 +352,7 @@ h3 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color
   cursor: pointer; transition: all var(--transition); display: block;
 }
 .radio-pill input:checked + label {
-  background: rgba(45,57,48,0.1); border-color: var(--primary-container); color: var(--primary);
+  background: rgba(34,64,154,0.1); border-color: var(--primary-container); color: var(--primary);
 }
 
 /* ─── OTP input ──────────────────────────────────────────────────────────────── */
