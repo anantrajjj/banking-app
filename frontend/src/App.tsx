@@ -6,7 +6,8 @@ import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import FundTransferPage from './pages/FundTransferPage';
 import LoanEligibilityPage from './pages/LoanEligibilityPage';
 import Layout from './components/Layout';
-import { getAccessToken, subscribeToToken } from './store/authStore';
+import { getAccessToken, getRefreshToken, subscribeToToken, clearSession } from './store/authStore';
+import { refreshAccessToken } from './api/client';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(getAccessToken());
@@ -21,6 +22,39 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  // On startup, if we have a persisted refresh token but no in-memory access
+  // token (e.g. after a page reload), silently restore the session before
+  // rendering routes — otherwise PrivateRoute would bounce to /login.
+  const [booting, setBooting] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!getAccessToken() && getRefreshToken()) {
+        try {
+          await refreshAccessToken();
+        } catch {
+          clearSession();
+        }
+      }
+      if (active) setBooting(false);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (booting) {
+    return (
+      <div style={{
+        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'var(--sand-base)',
+      }}>
+        <div className="spinner" aria-label="Loading" />
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>

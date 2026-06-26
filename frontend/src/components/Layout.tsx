@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { clearAccessToken } from '../store/authStore';
+import { clearAccessToken, getRefreshToken } from '../store/authStore';
 import client from '../api/client';
 
 const NAV = [
@@ -25,7 +25,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   )?.[1] ?? 'SecureBank';
 
   async function handleLogout() {
-    try { await client.post('/auth/logout'); } catch { /* ignore */ }
+    const refresh_token = getRefreshToken();
+    try { await client.post('/auth/logout', { refresh_token }); } catch { /* ignore */ }
     clearAccessToken();
     navigate('/login');
   }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import client from '../api/client';
-import { setAccessToken } from '../store/authStore';
+import { setSession } from '../store/authStore';
 
 type Step = 'password' | 'otp';
 interface LoginResponse { mfa_challenge_id: string; otp_channel: 'EMAIL' | 'SMS'; }
@@ -51,7 +51,7 @@ export default function LoginPage() {
         mfa_challenge_id: challengeId,
         otp,
       });
-      setAccessToken(res.data.access_token);
+      setSession(res.data.access_token, res.data.refresh_token);
       navigate('/dashboard');
     } catch (err: unknown) {
       const status = (err as { response?: { status: number } }).response?.status ?? 0;

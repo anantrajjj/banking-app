@@ -1,5 +1,11 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from 'axios';
-import { getAccessToken } from '../store/authStore';
+import {
+  getAccessToken,
+  setAccessToken,
+  getRefreshToken,
+  setRefreshToken,
+  clearSession,
+} from '../store/authStore';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/v1';
 
@@ -22,6 +28,36 @@ const client: AxiosInstance = axios.create({
   timeout: 15_000,
 });
 
+/**
+ * Exchange the stored refresh token for a fresh access token (and a rotated
+ * refresh token). Uses a bare axios call so it never goes through this client's
+ * interceptors (avoids infinite 401 loops). De-duplicates concurrent calls.
+ */
+let _refreshInFlight: Promise<string> | null = null;
+
+export function refreshAccessToken(): Promise<string> {
+  if (_refreshInFlight) return _refreshInFlight;
+
+  _refreshInFlight = (async () => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new Error('No refresh token');
+    const res = await axios.post<{ access_token: string; refresh_token: string }>(
+      `${BASE_URL}/auth/refresh`,
+      { refresh_token: refreshToken },
+      { headers: { 'Content-Type': 'application/json' }, timeout: 15_000 },
+    );
+    setAccessToken(res.data.access_token);
+    setRefreshToken(res.data.refresh_token);
+    return res.data.access_token;
+  })();
+
+  _refreshInFlight.finally(() => {
+    _refreshInFlight = null;
+  });
+
+  return _refreshInFlight;
+}
+
 // Request interceptor — inject JWT from in-memory store
 client.interceptors.request.use((config) => {
   const token = getAccessToken();
@@ -31,13 +67,41 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor — retry on 503/429 with exponential backoff
+// Response interceptor — auto-refresh on 401, retry on 503/429
 client.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const config = error.config as AxiosRequestConfig & { _retryCount?: number };
+    const config = error.config as
+      | (AxiosRequestConfig & { _retryCount?: number; _retriedAuth?: boolean })
+      | undefined;
     const status = error.response?.status;
+    const url = config?.url ?? '';
 
+    // ── 401: try a one-time token refresh, then replay the request ───────────
+    if (
+      status === 401 &&
+      config &&
+      !config._retriedAuth &&
+      !url.includes('/auth/') &&
+      getRefreshToken()
+    ) {
+      config._retriedAuth = true;
+      try {
+        const newToken = await refreshAccessToken();
+        config.headers = config.headers ?? {};
+        (config.headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`;
+        return client(config);
+      } catch {
+        // Refresh failed — session is truly over.
+        clearSession();
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          window.location.assign('/login');
+        }
+        return Promise.reject(error);
+      }
+    }
+
+    // ── 503 / 429: exponential backoff retry ────────────────────────────────
     if ((status === 503 || status === 429) && config) {
       config._retryCount = (config._retryCount ?? 0) + 1;
       if (config._retryCount <= MAX_RETRIES) {
@@ -48,7 +112,7 @@ client.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default client;
