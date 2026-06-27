@@ -1,21 +1,71 @@
 #!/bin/sh
-# Pre-push hook: run TypeScript type-check on frontend before any push.
-# Catches unused variables, type mismatches, and missing imports that the
-# Render build would otherwise catch after a 3-minute wait.
+# Pre-push hook — two-stage check before any push reaches Render.
+#
+# Stage 1 (static — no node_modules needed):
+#   Scans changed .ts/.tsx files for known error patterns that TypeScript
+#   catches but that can't be run locally due to native dependency constraints.
+#
+# Stage 2 (frontend tsc — requires frontend node_modules):
+#   Runs tsc --noEmit on the frontend, which has no native deps so always works.
 
-echo "⏳ Running frontend typecheck before push…"
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
 
-cd "$(git rev-parse --show-toplevel)"
+# ── Stage 1: static pattern checks on all .ts/.tsx files ─────────────────────
 
-# Install frontend deps silently if not present
-npm --prefix frontend install --include=dev --silent 2>/dev/null
+CHANGED=$(git diff --name-only HEAD..@{upstream} 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || find api/src frontend/src -name '*.ts' -o -name '*.tsx')
 
-# Run tsc --noEmit
-if ! npm --prefix frontend run typecheck --silent; then
+ERRORS=0
+
+for FILE in $CHANGED; do
+  [ -f "$FILE" ] || continue
+  case "$FILE" in *.ts|*.tsx) ;; *) continue ;; esac
+
+  # 1. Unawaited async getPool() — always returns Promise<Pool>, must be awaited
+  if grep -nP "const \w+ = getPool\(\);" "$FILE" 2>/dev/null | grep -v "await"; then
+    echo "❌ $FILE: getPool() must be awaited (use: const pool = await getPool())"
+    ERRORS=$((ERRORS + 1))
+  fi
+
+  # 2. Variables declared with const/let but never referenced again in the same file
+  #    Heuristic: const NAME = ... where NAME never appears after that line.
+  python3 - "$FILE" << 'PYEOF'
+import re, sys
+path = sys.argv[1]
+try:
+    src = open(path).read()
+except Exception:
+    sys.exit(0)
+lines = src.splitlines()
+for i, line in enumerate(lines):
+    m = re.match(r'\s+const (\w+)\s*=', line)
+    if not m:
+        continue
+    name = m.group(1)
+    # Check if the name appears anywhere in the rest of the file
+    rest = '\n'.join(lines[i+1:])
+    if not re.search(r'\b' + re.escape(name) + r'\b', rest):
+        print(f"  ⚠  Possibly unused variable '{name}' at line {i+1}: {line.strip()[:80]}")
+PYEOF
+
+done
+
+if [ "$ERRORS" -gt 0 ]; then
   echo ""
-  echo "❌ TypeScript errors found. Push aborted."
-  echo "   Fix the errors above, then re-run: git push"
+  echo "❌ Static checks failed. Fix the errors above and re-run: git push"
   exit 1
 fi
 
-echo "✅ Typecheck passed."
+# ── Stage 2: frontend tsc --noEmit ───────────────────────────────────────────
+
+echo "⏳ Running frontend typecheck…"
+npm --prefix frontend install --include=dev --silent 2>/dev/null || true
+
+if ! npm --prefix frontend run typecheck --silent; then
+  echo ""
+  echo "❌ Frontend TypeScript errors found. Push aborted."
+  exit 1
+fi
+
+echo "✅ All checks passed."
