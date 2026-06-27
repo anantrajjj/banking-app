@@ -166,7 +166,7 @@ export async function openFD(
   const interestRate = getInterestRate(tenureMonths);
   const { maturityAmount, interestEarned } = calculateMaturity(principal, interestRate, tenureMonths);
 
-  const pool = getPool();
+  const pool = await getPool();
   const client = await pool.connect();
 
   try {
@@ -295,7 +295,7 @@ export async function closeFDPrematurely(
   fdId: string,
   customerId: string,
 ): Promise<{ payout: number; penalty: number; penaltyRate: number }> {
-  const pool = getPool();
+  const pool = await getPool();
   const client = await pool.connect();
 
   try {
@@ -328,7 +328,6 @@ export async function closeFDPrematurely(
     const penaltyRate = 1.00;
     const penalisedRate = Math.max(0, applicableRate - penaltyRate);
     const { maturityAmount: penalisedAmount } = calculateMaturity(principal, penalisedRate, Math.max(1, monthsHeld));
-    const penalty   = parseFloat((principal - (penalisedAmount - (penalisedAmount - principal))).toFixed(2));
     const actualPenalty = parseFloat((parseFloat(fd.interest_earned) - Math.max(0, penalisedAmount - principal)).toFixed(2));
     const payout    = parseFloat(penalisedAmount.toFixed(2));
 

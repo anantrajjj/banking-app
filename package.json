@@ -17,8 +17,9 @@
     "test:api": "npm test --workspace=api",
     "lint:api": "npm run lint --workspace=api",
     "typecheck:frontend": "npm --prefix frontend install --include=dev && npm --prefix frontend run typecheck",
-    "typecheck": "npm run typecheck:frontend",
-    "prepare": "husky || true"
+    "typecheck": "npm run typecheck:frontend && npm run typecheck:api",
+    "prepare": "husky || true",
+    "typecheck:api": "npm run build --workspace=api"
   },
   "engines": {
     "node": ">=20.0.0",
