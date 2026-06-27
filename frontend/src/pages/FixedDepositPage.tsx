@@ -76,13 +76,7 @@ export default function FixedDepositPage() {
   useEffect(() => { void load(); }, [load]);
 
   const selectedRate = rates.find(r => r.months === tenure);
-  const preview = selectedRate && amount && parseFloat(amount) >= 1000
-    ? selectedRate.preview
-      ? { maturityAmount: parseFloat(amount) * (selectedRate.preview.maturityAmount / 100000), interestEarned: parseFloat(amount) * (selectedRate.preview.interestEarned / 100000) }
-      : null
-    : null;
-
-  // Recompute preview proportionally from the ₹1L base
+  // Compute live preview proportionally from the ₹1L base rate slab
   const amtNum = parseFloat(amount) || 0;
   const livePreview = selectedRate && amtNum >= 1000 ? {
     maturityAmount: amtNum * (selectedRate.preview.maturityAmount / 100000),
