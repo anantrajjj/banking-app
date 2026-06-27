@@ -30,6 +30,8 @@ import { logger } from './utils/logger';
 
 import { authRateLimit } from './middleware/rateLimit';
 import authRouter from './routes/auth.routes';
+import { authenticate } from './middleware/auth';
+import { requireRole } from './middleware/rbac';
 import accountRouter from './routes/account.routes';
 import transactionRouter from './routes/transaction.routes';
 import transferRouter from './routes/transfer.routes';
@@ -37,6 +39,8 @@ import loanRouter from './routes/loan.routes';
 import profileRouter from './routes/profile.routes';
 import adminRouter from './routes/admin.routes';
 import notificationRouter from './routes/notification.routes';
+import fdRouter from './routes/fd.routes';
+import cardRouter, { adminSeedCardsHandler } from './routes/card.routes';
 
 import { AuthError } from './services/auth.service';
 import { ServiceError } from './services/account.service';
@@ -102,6 +106,9 @@ app.use('/v1', loanRouter);
 app.use('/v1/profile', profileRouter);
 app.use('/v1/admin', adminRouter);
 app.use('/v1/notifications', notificationRouter);
+app.use('/v1/fd', fdRouter);
+app.use('/v1/cards', cardRouter);
+app.post('/v1/admin/seed-cards', authenticate, requireRole('ADMIN'), adminSeedCardsHandler);
 
 // ---------------------------------------------------------------------------
 // Static frontend (single-service deploy).
