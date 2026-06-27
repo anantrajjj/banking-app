@@ -34,6 +34,9 @@ import accountRouter from './routes/account.routes';
 import transactionRouter from './routes/transaction.routes';
 import transferRouter from './routes/transfer.routes';
 import loanRouter from './routes/loan.routes';
+import profileRouter from './routes/profile.routes';
+import adminRouter from './routes/admin.routes';
+import notificationRouter from './routes/notification.routes';
 
 import { AuthError } from './services/auth.service';
 import { ServiceError } from './services/account.service';
@@ -96,6 +99,9 @@ app.use('/v1/accounts', accountRouter);
 app.use('/v1/accounts', transactionRouter);
 app.use('/v1', transferRouter);
 app.use('/v1', loanRouter);
+app.use('/v1/profile', profileRouter);
+app.use('/v1/admin', adminRouter);
+app.use('/v1/notifications', notificationRouter);
 
 // ---------------------------------------------------------------------------
 // Static frontend (single-service deploy).

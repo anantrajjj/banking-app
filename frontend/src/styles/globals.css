@@ -390,3 +390,93 @@ h3 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; color
   .page-body       { padding: 0 20px 28px; }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
 }
+
+/* ─── Select input ───────────────────────────────────────────────────────────── */
+.sb-select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--sand-card);
+  border: none;
+  border-bottom: 1px solid var(--sand-border);
+  border-radius: 4px 4px 0 0;
+  color: var(--on-surface);
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color var(--transition);
+}
+.sb-select:focus { border-bottom: 2px solid var(--primary-container); }
+
+/* ─── sb-label ───────────────────────────────────────────────────────────────── */
+.sb-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--outline);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ─── Mobile hamburger button ────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hamburger-btn { display: flex !important; }
+  .app-sidebar   { display: none !important; }
+  .app-main      { margin-left: 0 !important; }
+  .page-header   { padding: 20px 20px 0; flex-wrap: wrap; gap: 14px; }
+  .page-body     { padding: 0 20px 28px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  header { padding: 0 20px !important; }
+}
+
+/* ─── Mobile sidebar slide-in ────────────────────────────────────────────────── */
+.mobile-sidebar {
+  display: flex !important; /* always in DOM, visibility controlled by JS */
+}
+
+/* ─── Notification dropdown ──────────────────────────────────────────────────── */
+.notif-dropdown-enter {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+}
+.notif-dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+/* ─── Admin page tabs ────────────────────────────────────────────────────────── */
+.admin-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 18px; background: none; border: none;
+  color: var(--on-surface-var); font-size: 0.875rem;
+  cursor: pointer; transition: color var(--transition);
+}
+.admin-tab.active { color: var(--primary); font-weight: 600; }
+.admin-tab:hover:not(.active) { color: var(--on-surface); }
+
+/* ─── Stat cards responsive ──────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* ─── Profile page responsive ────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .profile-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ─── Beneficiary list hover ─────────────────────────────────────────────────── */
+.bene-row { transition: background var(--transition); }
+.bene-row:hover { background: rgba(34,64,154,0.03); }
+
+/* ─── badge-locked ───────────────────────────────────────────────────────────── */
+.badge-locked {
+  background: rgba(186,26,26,0.08);
+  color: var(--color-danger);
+  border: 1px solid rgba(186,26,26,0.2);
+}
+.badge-active {
+  background: rgba(46,125,50,0.08);
+  color: var(--color-success);
+  border: 1px solid rgba(46,125,50,0.2);
+}
