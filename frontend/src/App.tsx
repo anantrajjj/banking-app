@@ -5,52 +5,52 @@ import DashboardPage from './pages/DashboardPage';
 import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import FundTransferPage from './pages/FundTransferPage';
 import LoanEligibilityPage from './pages/LoanEligibilityPage';
+import BeneficiaryPage from './pages/BeneficiaryPage';
+import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
 import Layout from './components/Layout';
 import { getAccessToken, getRefreshToken, subscribeToToken, clearSession } from './store/authStore';
+import { isAtLeast } from './store/userStore';
 import { refreshAccessToken } from './api/client';
+
+// ─── Route guards ─────────────────────────────────────────────────────────────
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(getAccessToken());
-
-  useEffect(() => {
-    const unsubscribe = subscribeToToken(() => setToken(getAccessToken()));
-    return unsubscribe;
-  }, []);
-
+  useEffect(() => subscribeToToken(() => setToken(getAccessToken())), []);
   if (!token) return <Navigate to="/login" replace />;
   return <Layout>{children}</Layout>;
 }
 
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const [token, setToken] = useState<string | null>(getAccessToken());
+  useEffect(() => subscribeToToken(() => setToken(getAccessToken())), []);
+  if (!token) return <Navigate to="/login" replace />;
+  if (!isAtLeast(token, 'BRANCH_MANAGER')) return <Navigate to="/dashboard" replace />;
+  return <Layout>{children}</Layout>;
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+
 export default function App() {
-  // On startup, if we have a persisted refresh token but no in-memory access
-  // token (e.g. after a page reload), silently restore the session before
-  // rendering routes — otherwise PrivateRoute would bounce to /login.
   const [booting, setBooting] = useState(true);
 
   useEffect(() => {
     let active = true;
     (async () => {
       if (!getAccessToken() && getRefreshToken()) {
-        try {
-          await refreshAccessToken();
-        } catch {
-          clearSession();
-        }
+        try { await refreshAccessToken(); }
+        catch { clearSession(); }
       }
       if (active) setBooting(false);
     })();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
   if (booting) {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--sand-base)',
-      }}>
-        <div className="spinner" aria-label="Loading" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--sand-base)' }}>
+        <div className="spinner" aria-label="Loading" style={{ borderTopColor: 'var(--primary)', borderColor: 'rgba(34,64,154,0.2)', width: 28, height: 28, borderWidth: 3 }} />
       </div>
     );
   }
@@ -59,11 +59,14 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+        <Route path="/dashboard"    element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
         <Route path="/transactions/:accountId" element={<PrivateRoute><TransactionHistoryPage /></PrivateRoute>} />
-        <Route path="/transfer" element={<PrivateRoute><FundTransferPage /></PrivateRoute>} />
-        <Route path="/loan" element={<PrivateRoute><LoanEligibilityPage /></PrivateRoute>} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/transfer"     element={<PrivateRoute><FundTransferPage /></PrivateRoute>} />
+        <Route path="/loan"         element={<PrivateRoute><LoanEligibilityPage /></PrivateRoute>} />
+        <Route path="/beneficiaries" element={<PrivateRoute><BeneficiaryPage /></PrivateRoute>} />
+        <Route path="/profile"      element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+        <Route path="/admin"        element={<AdminRoute><AdminPage /></AdminRoute>} />
+        <Route path="*"             element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
