@@ -216,13 +216,14 @@ export default function AdminPage() {
 
   if (!isManager) return null;
 
-  const TABS: { id: Tab; label: string; icon: string; adminOnly?: boolean }[] = [
+  const ALL_TABS: { id: Tab; label: string; icon: string; adminOnly?: boolean }[] = [
     { id: 'overview',      label: 'Overview',      icon: 'dashboard' },
     { id: 'users',         label: 'Users',         icon: 'group', adminOnly: true },
     { id: 'accounts',      label: 'Accounts',      icon: 'account_balance' },
     { id: 'loans',         label: 'Loans',         icon: 'account_balance_wallet' },
     { id: 'beneficiaries', label: 'Beneficiaries', icon: 'how_to_reg' },
-  ].filter((t) => !t.adminOnly || isAdmin);
+  ];
+  const TABS = ALL_TABS.filter((t) => !t.adminOnly || isAdmin);
 
   return (
     <>
