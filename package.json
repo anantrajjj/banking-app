@@ -8,17 +8,23 @@
   ],
   "scripts": {
     "build": "npm run build:frontend && npm run build:api && npm run copy:assets",
-    "build:frontend": "npm --prefix frontend install --include=dev && npm --prefix frontend run build",
+    "build:frontend": "npm --prefix frontend install --include=dev && npm --prefix frontend run typecheck && npm --prefix frontend run build",
     "build:api": "npm run build --workspace=api",
     "copy:assets": "node scripts/copy-assets.js",
     "migrate": "npm run migrate --workspace=api",
     "seed": "npm run seed --workspace=api",
     "start": "node api/dist/app.js",
     "test:api": "npm test --workspace=api",
-    "lint:api": "npm run lint --workspace=api"
+    "lint:api": "npm run lint --workspace=api",
+    "typecheck:frontend": "npm --prefix frontend install --include=dev && npm --prefix frontend run typecheck",
+    "typecheck": "npm run typecheck:frontend",
+    "prepare": "husky || true"
   },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0"
   }
 }

@@ -25,7 +25,6 @@ function DebitCard({ card, onReveal, revealed, countdown }: {
   revealed: CardReveal | null;
   countdown: number;
 }) {
-  const networkColor = card.network === 'VISA' ? '#1a1f71' : card.network === 'MASTERCARD' ? '#eb001b' : '#2b7bb9';
   const masked = `•••• •••• •••• ${card.last_four}`;
 
   return (

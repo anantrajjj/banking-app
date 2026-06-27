@@ -1,0 +1,21 @@
+#!/bin/sh
+# Pre-push hook: run TypeScript type-check on frontend before any push.
+# Catches unused variables, type mismatches, and missing imports that the
+# Render build would otherwise catch after a 3-minute wait.
+
+echo "⏳ Running frontend typecheck before push…"
+
+cd "$(git rev-parse --show-toplevel)"
+
+# Install frontend deps silently if not present
+npm --prefix frontend install --include=dev --silent 2>/dev/null
+
+# Run tsc --noEmit
+if ! npm --prefix frontend run typecheck --silent; then
+  echo ""
+  echo "❌ TypeScript errors found. Push aborted."
+  echo "   Fix the errors above, then re-run: git push"
+  exit 1
+fi
+
+echo "✅ Typecheck passed."
