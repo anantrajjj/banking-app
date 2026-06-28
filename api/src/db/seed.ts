@@ -23,8 +23,24 @@ import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { query, closePool } from './index';
+import { encrypt } from '../utils/crypto';
+import { getSecret } from '../utils/secrets';
+import { randomBytes } from 'crypto';
 
 const BCRYPT_ROUNDS = 12;
+
+/** Generate a 16-digit RuPay card number (BIN 6071). */
+function generateCardNumber(): string {
+  const prefix = '6071';
+  const body   = randomBytes(6).readUIntBE(0, 6).toString().slice(0, 8).padStart(8, '0');
+  const last4  = randomBytes(2).readUInt16BE(0).toString().padStart(4, '0').slice(0, 4);
+  return prefix + body + last4;
+}
+
+/** Generate a 3-digit CVV. */
+function generateCvv(): string {
+  return String(100 + (randomBytes(1)[0]! % 900));
+}
 
 async function seed(): Promise<void> {
   const username = process.env['SEED_USERNAME'];
@@ -132,6 +148,47 @@ async function seed(): Promise<void> {
       [randomUUID(), savings.id],
     );
     console.log('  ✔  Sample transactions inserted');
+  }
+
+  // ── Debit cards ─────────────────────────────────────────────────────────────
+  if (savings && current) {
+    try {
+      const aesKey = await getSecret('AES_256_KEY');
+      const now    = new Date();
+      const expMon = now.getMonth() + 1;          // 1-based current month
+      const expYr  = now.getFullYear() + 4;        // 4-year validity
+
+      for (const account of [savings, current]) {
+        const cardNum    = generateCardNumber();
+        const cvv        = generateCvv();
+        const lastFour   = cardNum.slice(-4);
+
+        await query(
+          `INSERT INTO debit_cards
+             (account_id, customer_id, card_number_enc, last_four, cvv_enc,
+              expiry_month, expiry_year, cardholder_name, network)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'RUPAY')
+           ON CONFLICT (account_id) DO NOTHING`,
+          [
+            account.id,
+            userId,
+            encrypt(cardNum, aesKey),
+            lastFour,
+            encrypt(cvv, aesKey),
+            expMon,
+            expYr,
+            username.toUpperCase(),
+          ],
+        );
+      }
+      console.log('  ✔  Debit cards seeded (RuPay · masked)');
+    } catch (cardErr: unknown) {
+      // Non-fatal: cards can be seeded later via POST /v1/admin/seed-cards
+      console.warn(
+        '  ⚠  Skipped card seeding (AES_256_KEY unavailable):',
+        (cardErr as Error).message,
+      );
+    }
   }
 
   await closePool();
