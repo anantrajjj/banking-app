@@ -228,6 +228,10 @@ resource "aws_ecs_task_definition" "api" {
         {
           name      = "AES_KEY"
           valueFrom = var.secret_arns["aes_key"]
+        },
+        {
+          name      = "REDIS_URL"
+          valueFrom = var.secret_arns["redis_url"]
         }
       ]
 

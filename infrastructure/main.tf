@@ -93,6 +93,7 @@ module "ecs" {
     db_url          = module.secrets.db_url_secret_arn
     jwt_private_key = module.secrets.jwt_key_secret_arn
     aes_key         = module.secrets.aes_key_secret_arn
+    redis_url       = module.secrets.redis_url_secret_arn
   }
   sns_topic_arn = module.monitoring.sns_topic_arn
   depends_on    = [module.networking, module.alb, module.ecr, module.secrets, module.monitoring]

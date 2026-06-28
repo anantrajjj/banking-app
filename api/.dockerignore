@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+*.test.ts
+*.spec.ts
+*.property.test.ts
+.git
+.gitignore
+README.md
+jest.config.*
+eslint*
+.prettier*

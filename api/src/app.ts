@@ -98,6 +98,11 @@ app.get('/v1/health', (_req, res) => {
 // ---------------------------------------------------------------------------
 // API routes — real DB, Redis, JWT, RBAC.
 // ---------------------------------------------------------------------------
+// ── Health check — no auth, used by ALB and ECS health checks ─────────────────
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({ status: 'ok', ts: Date.now() });
+});
+
 app.use('/v1/auth', authRateLimit, authRouter);
 app.use('/v1/accounts', accountRouter);
 app.use('/v1/accounts', transactionRouter);

@@ -92,7 +92,27 @@ resource "aws_secretsmanager_secret_version" "sns_topic_arn" {
   }
 }
 
-# ── IAM Policy: ECS task role read-only access to all 4 secrets ───────────────
+# ── Redis URL ─────────────────────────────────────────────────────────────────
+
+resource "aws_secretsmanager_secret" "redis_url" {
+  name        = "${var.app_name}/redis-url"
+  description = "Redis connection URL (rediss://:AUTH@endpoint:6379) for ${var.app_name} (${var.env})"
+
+  tags = merge(local.common_tags, {
+    Name = "${var.app_name}-${var.env}-redis-url"
+  })
+}
+
+resource "aws_secretsmanager_secret_version" "redis_url" {
+  secret_id     = aws_secretsmanager_secret.redis_url.id
+  secret_string = jsonencode({ placeholder = "REPLACE_BEFORE_DEPLOY" })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+# ── IAM Policy: ECS task role read-only access to all 5 secrets ───────────────
 
 resource "aws_iam_policy" "secrets_read" {
   name        = "${var.app_name}-${var.env}-secrets-read-policy"
@@ -112,7 +132,8 @@ resource "aws_iam_policy" "secrets_read" {
           aws_secretsmanager_secret.db_url.arn,
           aws_secretsmanager_secret.jwt_private_key.arn,
           aws_secretsmanager_secret.aes_key.arn,
-          aws_secretsmanager_secret.sns_topic_arn.arn
+          aws_secretsmanager_secret.sns_topic_arn.arn,
+          aws_secretsmanager_secret.redis_url.arn
         ]
       }
     ]

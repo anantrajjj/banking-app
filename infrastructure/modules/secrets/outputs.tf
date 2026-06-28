@@ -26,3 +26,8 @@ output "secrets_policy_arn" {
   description = "ARN of the IAM policy granting read access to all SecureBank secrets"
   value       = aws_iam_policy.secrets_read.arn
 }
+
+output "redis_url_secret_arn" {
+  description = "ARN of the Secrets Manager secret holding the Redis connection URL"
+  value       = aws_secretsmanager_secret.redis_url.arn
+}
