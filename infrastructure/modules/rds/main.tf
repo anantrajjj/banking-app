@@ -85,7 +85,7 @@ resource "aws_db_instance" "main" {
   publicly_accessible    = false
 
   # High availability
-  multi_az = true
+  multi_az = false
 
   # Parameter group
   parameter_group_name = aws_db_parameter_group.main.name
@@ -97,7 +97,7 @@ resource "aws_db_instance" "main" {
 
   # Protection
   deletion_protection       = true
-  skip_final_snapshot       = false
+  skip_final_snapshot       = true
   final_snapshot_identifier = "${var.app_name}-${var.env}-final-snapshot"
 
   # Performance Insights (optional but helpful for a banking workload)
