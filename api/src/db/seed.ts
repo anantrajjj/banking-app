@@ -64,8 +64,13 @@ async function seed(): Promise<void> {
 
   const userResult = await query<{ id: string }>(
     `INSERT INTO users (username, email, phone, password_hash, role, otp_channel)
-     VALUES ($1, $2, $3, $4, 'CUSTOMER', 'EMAIL')
-     ON CONFLICT (username) DO NOTHING
+     VALUES ($1, $2, $3, $4, 'CUSTOMER', 'SMS')
+     ON CONFLICT (username) DO UPDATE
+       SET email = EXCLUDED.email,
+           phone = EXCLUDED.phone,
+           password_hash = EXCLUDED.password_hash,
+           otp_channel = EXCLUDED.otp_channel,
+           updated_at = NOW()
      RETURNING id`,
     [username, email, phone, passwordHash],
   );
