@@ -267,6 +267,10 @@ resource "aws_ecs_task_definition" "api" {
         {
           name  = "PORT"
           value = "3000"
+        },
+        {
+          name  = "OTP_DELIVERY"
+          value = "console"
         }
       ]
 
