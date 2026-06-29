@@ -53,6 +53,26 @@ resource "aws_iam_role_policy_attachment" "task_execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# Execution role also needs Secrets Manager so ECS can inject secrets
+# as environment variables before the container starts
+resource "aws_iam_role_policy" "task_execution_secrets" {
+  name = "${var.app_name}-${var.env}-ecs-execution-secrets-policy"
+  role = aws_iam_role.task_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid    = "SecretsManagerRead"
+      Effect = "Allow"
+      Action = [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+      ]
+      Resource = "arn:aws:secretsmanager:*:*:secret:${var.app_name}/*"
+    }]
+  })
+}
+
 # ---------------------------------------------------------------------------
 # IAM — Task Role (app-level; used by the running container process)
 # Grants least-privilege access to Secrets Manager, CloudWatch, and SNS
