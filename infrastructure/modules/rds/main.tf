@@ -28,7 +28,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_parameter_group" "main" {
   name        = "${var.app_name}-${var.env}-pg15-params"
   family      = "postgres15"
-  description = "SecureBank PostgreSQL 15 parameter group — audit logging enabled"
+  description = "SecureBank PostgreSQL 15 parameter group - audit logging enabled"
 
   parameter {
     name  = "log_connections"
