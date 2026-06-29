@@ -110,6 +110,7 @@ module "ecs" {
     aes_key         = module.secrets.aes_key_secret_arn
     redis_url       = module.secrets.redis_url_secret_arn
     sns_topic_arn   = module.secrets.sns_topic_arn_secret_arn
+    jwt_public_key  = module.secrets.jwt_public_key_secret_arn
   }
   sns_topic_arn = aws_sns_topic.alerts.arn
   depends_on    = [module.networking, module.alb, module.secrets]

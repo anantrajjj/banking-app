@@ -52,6 +52,26 @@ resource "aws_secretsmanager_secret_version" "jwt_private_key" {
   }
 }
 
+# ── JWT Public Key ────────────────────────────────────────────────────────────
+
+resource "aws_secretsmanager_secret" "jwt_public_key" {
+  name        = "${var.app_name}/jwt-public-key"
+  description = "RS256 public key used to verify JWTs for ${var.app_name} (${var.env})"
+
+  tags = merge(local.common_tags, {
+    Name = "${var.app_name}-${var.env}-jwt-public-key"
+  })
+}
+
+resource "aws_secretsmanager_secret_version" "jwt_public_key" {
+  secret_id     = aws_secretsmanager_secret.jwt_public_key.id
+  secret_string = jsonencode({ placeholder = "REPLACE_BEFORE_DEPLOY" })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
 # ── AES-256 Key ───────────────────────────────────────────────────────────────
 
 resource "aws_secretsmanager_secret" "aes_key" {

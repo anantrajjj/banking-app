@@ -26,3 +26,8 @@ output "redis_url_secret_arn" {
   description = "ARN of the Secrets Manager secret holding the Redis connection URL"
   value       = aws_secretsmanager_secret.redis_url.arn
 }
+
+output "jwt_public_key_secret_arn" {
+  description = "ARN of the Secrets Manager secret holding the JWT RS256 public key"
+  value       = aws_secretsmanager_secret.jwt_public_key.arn
+}

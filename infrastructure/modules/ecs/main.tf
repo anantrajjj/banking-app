@@ -256,6 +256,10 @@ resource "aws_ecs_task_definition" "api" {
         {
           name      = "SNS_TOPIC_ARN"
           valueFrom = var.secret_arns["sns_topic_arn"]
+        },
+        {
+          name      = "JWT_PUBLIC_KEY"
+          valueFrom = var.secret_arns["jwt_public_key"]
         }
       ]
 
