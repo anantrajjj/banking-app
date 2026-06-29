@@ -96,18 +96,6 @@ resource "aws_ecr_lifecycle_policy" "api" {
 # Grants the ECS task execution role pull permissions
 # ─────────────────────────────────────────────────────────────────────────────
 
-resource "aws_ecr_repository_policy" "frontend" {
-  repository = aws_ecr_repository.frontend.name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowECSTaskExecutionRolePull"
-        Effect = "Allow"
-        Principal = {
-          AWS = var.execution_role_arn
-        }
         Action = [
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
@@ -122,18 +110,6 @@ resource "aws_ecr_repository_policy" "frontend" {
 # ECR Repository Policy — API
 # ─────────────────────────────────────────────────────────────────────────────
 
-resource "aws_ecr_repository_policy" "api" {
-  repository = aws_ecr_repository.api.name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowECSTaskExecutionRolePull"
-        Effect = "Allow"
-        Principal = {
-          AWS = var.execution_role_arn
-        }
         Action = [
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
