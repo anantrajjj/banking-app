@@ -15,7 +15,7 @@ WORKDIR /app
 # Build tools required by bcrypt's native binding
 RUN apk add --no-cache python3 make g++
 
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install --omit=dev --prefer-offline
 
 # ── Stage 2: compile TypeScript ───────────────────────────────────────────────
@@ -25,7 +25,7 @@ WORKDIR /app
 
 RUN apk add --no-cache python3 make g++
 
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install --prefer-offline
 
 COPY tsconfig.json ./
