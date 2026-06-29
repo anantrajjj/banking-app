@@ -16,7 +16,7 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev --prefer-offline
 
 # ── Stage 2: compile TypeScript ───────────────────────────────────────────────
 FROM node:20-alpine AS build
@@ -26,7 +26,7 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --prefer-offline
 
 COPY tsconfig.json ./
 COPY src ./src
