@@ -12,11 +12,6 @@ variable "public_subnet_ids" {
   type        = list(string)
 }
 
-variable "certificate_domain" {
-  description = "Domain name used to look up the ACM certificate (e.g. securebank.example.com). Certificate must already exist with status ISSUED."
-  type        = string
-}
-
 variable "vpc_id" {
   description = "ID of the VPC in which target groups are created"
   type        = string

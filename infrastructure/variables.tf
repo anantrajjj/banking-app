@@ -62,6 +62,7 @@ variable "redis_auth_token" {
 }
 
 variable "certificate_domain" {
+  default     = ""
   description = "Domain name for the ACM TLS certificate attached to the ALB (e.g. securebank.example.com)"
   type        = string
 }

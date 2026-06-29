@@ -73,7 +73,6 @@ module "alb" {
   env                = var.env
   sg_alb_id          = module.networking.sg_alb_id
   public_subnet_ids  = module.networking.public_subnet_ids
-  certificate_domain = var.certificate_domain
   vpc_id             = module.networking.vpc_id
   depends_on         = [module.networking]
 }
