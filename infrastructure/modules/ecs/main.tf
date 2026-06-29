@@ -275,6 +275,14 @@ resource "aws_ecs_task_definition" "api" {
         {
           name  = "OTP_DELIVERY"
           value = "console"
+        },
+        {
+          name  = "REDIS_URL"
+          value = var.redis_url
+        },
+        {
+          name  = "JWT_PUBLIC_KEY"
+          value = var.jwt_public_key
         }
       ]
 

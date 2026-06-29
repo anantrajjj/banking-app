@@ -75,3 +75,16 @@ variable "api_desired_count" {
   type        = number
   default     = 2
 }
+
+variable "redis_url" {
+  description = "Redis connection URL passed as plain env var to avoid Secrets Manager injection timing issues"
+  type        = string
+  default     = ""
+}
+
+variable "jwt_public_key" {
+  description = "JWT RS256 public key passed as plain env var"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

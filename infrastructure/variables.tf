@@ -92,3 +92,16 @@ variable "ecr_registry" {
   description = "ECR registry URL (e.g. 123456789012.dkr.ecr.us-east-1.amazonaws.com)"
   type        = string
 }
+
+variable "redis_url" {
+  description = "Redis URL passed directly as env var to ECS"
+  type        = string
+  default     = ""
+}
+
+variable "jwt_public_key" {
+  description = "JWT RS256 public key passed directly as env var to ECS"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
