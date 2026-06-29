@@ -274,22 +274,27 @@ export async function login(
   } else {
     // Send OTP via SNS (fire-and-forget; log failures)
     try {
-      const topicArn = await getSecret('SNS_TOPIC_ARN');
-      const snsMessage =
-        user.otp_channel === 'SMS'
-          ? `Your SecureBank OTP is: ${otp}. Valid for 5 minutes.`
-          : `Your SecureBank login OTP is: ${otp}. It expires in 5 minutes. Do not share this code.`;
-
-      await getSnsClient().send(
-        new PublishCommand({
-          TopicArn: topicArn,
-          Message: snsMessage,
-          MessageAttributes: {
-            channel: { DataType: 'String', StringValue: user.otp_channel },
-            userId: { DataType: 'String', StringValue: user.id },
-          },
-        }),
-      );
+      if (user.otp_channel === 'SMS') {
+        // Direct SMS to the user's phone number.
+        // In SNS sandbox, verify the destination number first at:
+        // AWS Console → SNS → Text messaging → Sandbox destination phone numbers
+        await getSnsClient().send(
+          new PublishCommand({
+            PhoneNumber: user.phone,
+            Message: `Your SecureBank OTP is: ${otp}. Valid for 5 minutes.`,
+          }),
+        );
+      } else {
+        // EMAIL — publish to the SNS topic (must have a confirmed email subscription)
+        const topicArn = await getSecret('SNS_TOPIC_ARN');
+        await getSnsClient().send(
+          new PublishCommand({
+            TopicArn: topicArn,
+            Message: `Your SecureBank login OTP is: ${otp}. It expires in 5 minutes. Do not share this code.`,
+            Subject: 'SecureBank — Your Login OTP',
+          }),
+        );
+      }
     } catch (snsErr) {
       logger.warn('SNS OTP dispatch failed', {
         userId: user.id,
