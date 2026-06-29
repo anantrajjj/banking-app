@@ -91,7 +91,7 @@ resource "aws_db_instance" "main" {
   parameter_group_name = aws_db_parameter_group.main.name
 
   # Backups and maintenance
-  backup_retention_period = 7
+  backup_retention_period = 0
   backup_window           = "03:00-04:00"
   maintenance_window      = "sun:04:30-sun:05:30"
 
