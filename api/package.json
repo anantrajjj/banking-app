@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "unlock-account": "node -r dotenv/config dist/db/unlock-account.js"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "3.758.0",
