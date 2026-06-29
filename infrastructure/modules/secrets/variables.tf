@@ -14,7 +14,3 @@ variable "env" {
   default     = "prod"
 }
 
-variable "ecs_task_role_arn" {
-  description = "ARN of the ECS task IAM role that will be granted read access to the secrets"
-  type        = string
-}

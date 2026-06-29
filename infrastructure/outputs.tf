@@ -37,12 +37,8 @@ output "pipeline_name" {
   value       = module.cicd.pipeline_name
 }
 
-output "sns_alerts_arn" {
-  description = "ARN of the SNS topic used for operational alerts"
-  value       = module.monitoring.sns_topic_arn
-}
 
-output "cloudtrail_trail_arn" {
-  description = "ARN of the CloudTrail trail for audit logging"
-  value       = module.monitoring.cloudtrail_trail_arn
+output "sns_topic_arn" {
+  description = "ARN of the SNS alerts topic"
+  value       = aws_sns_topic.alerts.arn
 }

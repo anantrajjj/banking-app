@@ -10,7 +10,3 @@ variable "env" {
   default     = "prod"
 }
 
-variable "execution_role_arn" {
-  description = "ARN of the ECS task execution IAM role allowed to pull images from ECR"
-  type        = string
-}
