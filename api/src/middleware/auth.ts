@@ -97,6 +97,8 @@ export function getRedisClient(): Redis {
       maxRetriesPerRequest: 0,
       enableOfflineQueue: false,
       lazyConnect: true,
+      // ElastiCache uses TLS (rediss://) — disable cert verification for demo
+      tls: url.startsWith('rediss://') ? { rejectUnauthorized: false } : undefined,
     });
   }
   return _redisClient;
