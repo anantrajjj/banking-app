@@ -55,6 +55,7 @@ async function seed(): Promise<void> {
 
   const email = process.env['SEED_EMAIL'] ?? `${username}@securebank.local`;
   const phone = process.env['SEED_PHONE'] ?? '+910000000000';
+  const role  = process.env['SEED_ROLE']  ?? 'CUSTOMER';
   const includeSample = process.env['SEED_SAMPLE_DATA'] !== 'false';
 
   console.log('🌱  Seeding database...');
@@ -64,7 +65,7 @@ async function seed(): Promise<void> {
 
   const userResult = await query<{ id: string }>(
     `INSERT INTO users (username, email, phone, password_hash, role, otp_channel)
-     VALUES ($1, $2, $3, $4, 'CUSTOMER', 'SMS')
+     VALUES ($1, $2, $3, $4, role, 'SMS')
      ON CONFLICT (username) DO UPDATE
        SET email = EXCLUDED.email,
            phone = EXCLUDED.phone,
@@ -72,7 +73,7 @@ async function seed(): Promise<void> {
            otp_channel = EXCLUDED.otp_channel,
            updated_at = NOW()
      RETURNING id`,
-    [username, email, phone, passwordHash],
+    [username, email, phone, passwordHash, role],
   );
 
   // Fetch the user id whether it was just inserted or already existed.
