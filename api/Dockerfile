@@ -32,6 +32,8 @@ COPY tsconfig.json ./
 COPY src ./src
 
 RUN npm run build
+# Copy SQL migration files alongside compiled JS (not processed by tsc)
+RUN mkdir -p dist/db/migrations && cp -r src/db/migrations/. dist/db/migrations/
 
 # ── Stage 3: production runtime ───────────────────────────────────────────────
 FROM node:20-alpine AS production

@@ -238,7 +238,7 @@ resource "aws_ecs_task_definition" "api" {
       # Secrets injected from Secrets Manager as environment variables
       secrets = [
         {
-          name      = "DB_URL"
+          name      = "DATABASE_URL"
           valueFrom = var.secret_arns["db_url"]
         },
         {
