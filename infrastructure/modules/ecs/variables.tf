@@ -54,8 +54,8 @@ variable "secret_arns" {
   type        = map(string)
 
   validation {
-    condition     = contains(keys(var.secret_arns), "db_url") && contains(keys(var.secret_arns), "jwt_private_key") && contains(keys(var.secret_arns), "aes_key") && contains(keys(var.secret_arns), "redis_url")
-    error_message = "secret_arns must contain keys: db_url, jwt_private_key, aes_key, redis_url"
+    condition     = contains(keys(var.secret_arns), "db_url") && contains(keys(var.secret_arns), "jwt_private_key") && contains(keys(var.secret_arns), "aes_key") && contains(keys(var.secret_arns), "redis_url") && contains(keys(var.secret_arns), "sns_topic_arn")
+    error_message = "secret_arns must contain keys: db_url, jwt_private_key, aes_key, redis_url, sns_topic_arn"
   }
 }
 
